@@ -23,6 +23,42 @@ router.get('/admin/stats', verifyToken, verifyAdmin, async (req, res) => {
   }
 });
 
+router.get('/admin/users', verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete('/admin/users/:email', verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    await User.findOneAndDelete({ email: req.params.email });
+    res.json({ success: true, message: 'User deleted' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/startups', verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const startups = await Startup.find({});
+    res.json(startups);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete('/startups/:id', verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    await Startup.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Startup deleted' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.patch('/admin/users/:id/block', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const { isBlocked } = req.body;
