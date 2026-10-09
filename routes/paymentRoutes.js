@@ -22,6 +22,9 @@ router.post('/create-checkout-session', verifyToken, async (req, res) => {
     const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
     const { email } = req.body;
     
+    // Dynamic client url fallbacks to localhost for safety
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+
     const session = await stripe.checkout.sessions.create({
       line_items: [{
         price_data: {
@@ -35,8 +38,8 @@ router.post('/create-checkout-session', verifyToken, async (req, res) => {
         quantity: 1,
       }],
       mode: 'payment',
-      success_url: `http://localhost:5173/founder-dashboard?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `http://localhost:5173/founder-dashboard`,
+      success_url: `${clientUrl}/founder-dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${clientUrl}/founder-dashboard`,
       customer_email: email || undefined,
     });
 

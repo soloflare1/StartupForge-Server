@@ -42,7 +42,7 @@ router.get('/opportunities', async (req, res) => {
 
 router.post('/opportunities', verifyToken, async (req, res) => {
   try {
-    // Ensure commitment_level has a fallback if missing
+    
     const payload = {
       ...req.body,
       commitment_level: req.body.commitment_level || 'Full-time'
