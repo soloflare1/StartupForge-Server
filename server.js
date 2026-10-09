@@ -9,13 +9,11 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(cookieParser());
-
-// এখানে আপনার লাইভ ফ্রন্টএন্ডের ডোমেইনটি যুক্ত করে দেওয়া হলো
 app.use(cors({
   origin: [
     'http://localhost:5173', 
     'http://localhost:3000', 
-    'https://startup-forge-client.vercel.app', // <-- আপনার ফ্রন্টএন্ডের লাইভ ইউআরএল এখানে বসাবেন (যদি অন্য কিছু হয় তা পরিবর্তন করে দিন)
+    'https://startup-forge-client-o4cbvqk37-nosratee.vercel.app',
     process.env.CLIENT_URL
   ].filter(Boolean),
   credentials: true
