@@ -3,15 +3,16 @@ const Payment = require('../models/Payment');
 const verifyToken = require('../middleware/verifyToken');
 const router = express.Router();
 
-// Create Stripe Checkout Session for Premium Founder Package
 router.post('/create-checkout-session', verifyToken, async (req, res) => {
   try {
-    // Initialize stripe dynamically inside the route
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return res.status(500).json({ error: 'STRIPE_SECRET_KEY is missing in backend environment variables' });
+    }
+
     const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
     const { email } = req.body;
     
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
       line_items: [{
         price_data: {
           currency: 'usd',
@@ -19,28 +20,27 @@ router.post('/create-checkout-session', verifyToken, async (req, res) => {
             name: 'StartupForge Premium Founder Package',
             description: 'Unlock unlimited opportunity posts for your startup'
           },
-          unit_amount: 4900, // $49.00 USD
+          unit_amount: 4900,
         },
         quantity: 1,
       }],
       mode: 'payment',
-      success_url: `${process.env.CLIENT_URL}/dashboard/founder/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL}/dashboard/founder/overview`,
-      customer_email: email,
+      success_url: `http://localhost:5173/founder-dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `http://localhost:5173/founder-dashboard`,
+      customer_email: email || undefined,
     });
 
-    res.json({ id: session.id });
+    res.json({ url: session.url });
   } catch (error) {
+    console.error('Stripe Checkout Error:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
 
-// Save Successful Payment Transaction Record
 router.post('/save-payment', verifyToken, async (req, res) => {
   try {
     const { user_email, amount, transaction_id } = req.body;
     
-    // Check if transaction already exists to avoid duplicates
     const existingPayment = await Payment.findOne({ transaction_id });
     if (existingPayment) {
       return res.status(400).json({ message: 'Transaction already recorded' });

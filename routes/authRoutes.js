@@ -62,13 +62,16 @@ router.post('/jwt', async (req, res) => {
     const lowerEmail = email.toLowerCase().trim();
 
     const user = await User.findOne({ email: lowerEmail });
-    if (!user || !user.password) {
-      return res.status(400).json({ message: 'Invalid email or password.' });
+    if (!user) {
+      return res.status(400).json({ message: 'User not found with this email.' });
+    }
+    if (!user.password) {
+      return res.status(400).json({ message: 'Password not set for this account. Please re-register.' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid email or password.' });
+      return res.status(400).json({ message: 'Incorrect password.' });
     }
 
     const payload = {
@@ -98,6 +101,7 @@ router.post('/jwt', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 router.post('/logout', (req, res) => {
   try {
     res.clearCookie('token', {

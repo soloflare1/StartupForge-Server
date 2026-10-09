@@ -7,7 +7,6 @@ const verifyToken = require('../middleware/verifyToken');
 const verifyAdmin = require('../middleware/verifyAdmin');
 const router = express.Router();
 
-// Admin Statistics 
 router.get('/admin/stats', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
@@ -24,7 +23,6 @@ router.get('/admin/stats', verifyToken, verifyAdmin, async (req, res) => {
   }
 });
 
-// Manage Users - Block/Unblock
 router.patch('/admin/users/:id/block', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const { isBlocked } = req.body;
@@ -35,10 +33,9 @@ router.patch('/admin/users/:id/block', verifyToken, verifyAdmin, async (req, res
   }
 });
 
-// Manage Startups - Approve/Remove
 router.patch('/admin/startups/:id/status', verifyToken, verifyAdmin, async (req, res) => {
   try {
-    const { status } = req.body;     // 'Approved' or 'Rejected'
+    const { status } = req.body;    
     const updatedStartup = await Startup.findByIdAndUpdate(req.params.id, { status }, { new: true });
     res.json(updatedStartup);
   } catch (error) {
@@ -46,7 +43,6 @@ router.patch('/admin/startups/:id/status', verifyToken, verifyAdmin, async (req,
   }
 });
 
-// View All Transactions
 router.get('/admin/transactions', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const transactions = await Payment.find().sort({ paid_at: -1 });
