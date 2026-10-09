@@ -92,12 +92,29 @@ router.post('/jwt', async (req, res) => {
       user: {
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        image: user.image,
+        skills: user.skills,
+        bio: user.bio
       },
       message: 'Logged in successfully' 
     });
   } catch (error) {
     console.error('Login server error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put('/users/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    const updatedUser = await User.findOneAndUpdate(
+      { email: email.toLowerCase().trim() },
+      { $set: req.body },
+      { new: true }
+    );
+    res.json(updatedUser);
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
