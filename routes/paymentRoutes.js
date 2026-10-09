@@ -3,6 +3,16 @@ const Payment = require('../models/Payment');
 const verifyToken = require('../middleware/verifyToken');
 const router = express.Router();
 
+router.get('/payments', verifyToken, async (req, res) => {
+  try {
+    const payments = await Payment.find().sort({ createdAt: -1 });
+    const totalRevenue = payments.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+    res.json({ payments, totalRevenue });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.post('/create-checkout-session', verifyToken, async (req, res) => {
   try {
     if (!process.env.STRIPE_SECRET_KEY) {
