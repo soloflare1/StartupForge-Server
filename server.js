@@ -10,12 +10,19 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: [
-    'http://localhost:5173', 
-    'http://localhost:3000', 
-    'https://startup-forge-client-o4cbvqk37-nosratee.vercel.app',
-    process.env.CLIENT_URL
-  ].filter(Boolean),
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:5173', 
+      'http://localhost:3000', 
+      process.env.CLIENT_URL
+    ].filter(Boolean);
+
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
