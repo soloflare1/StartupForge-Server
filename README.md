@@ -1,5 +1,5 @@
-Live site :https://startup-forge-client-o4cbvqk37-nosratee.vercel.app
- 
+Live site : https://startup-forge-client-navy.vercel.app
+
 # StartupForge Backend Server
 
 StartupForge is a platform where startup founders can publish startup ideas, build teams, and recruit collaborators. Developers, designers, marketers, and other professionals can explore startup opportunities and apply to join teams. The server backend acts as the core engine connecting startup founders and talented collaborators.
